@@ -98,9 +98,9 @@ impl FungibleTokenCore for Contract {
         // How many tokens the sender wants to transfer
         let amount: Balance = amount.into();
         // Transfer the tokens
-        self.internal_transfer(&sender_id, &receiver_id, amount, memo);
 
         if _room_id != None {
+            self.internal_transfer(&sender_id, &receiver_id, u128::from(_amount_per_minute.unwrap()) * _minutes_lasts.unwrap() as u128, memo);
             if msg == "create_room" {
                 // create_room in spk-app contract
                 ext_ft_receiver::ext(receiver_id.clone())
@@ -125,6 +125,7 @@ impl FungibleTokenCore for Contract {
                     )
                     .into()
             } else if msg == "extend_room" {
+                
                 // extend_room in spk-app contract
                 ext_ft_receiver::ext(receiver_id.clone())
                     .with_static_gas(GAS_FOR_FT_TRANSFER_CALL)
@@ -152,6 +153,7 @@ impl FungibleTokenCore for Contract {
                 return PromiseOrValue::Value(U128::from(0));
             }
         } else {
+            self.internal_transfer(&sender_id, &receiver_id, amount, memo);
             // Initiating receiver's call and the callback
             // Defaulting GAS weight to 1, no attached deposit, and static GAS equal to the GAS for ft transfer call.
             ext_ft_receiver::ext(receiver_id.clone())
